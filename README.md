@@ -1,3 +1,4 @@
+![Banner](assets/banner.png)
 # QuickDownloader
 
 Windows-приложение для сохранения видео и аудио с помощью [yt-dlp](https://github.com/yt-dlp/yt-dlp) и [FFmpeg](https://ffmpeg.org/). Поддерживает выбор качества и формата, плейлисты, историю загрузок, системный трей и три темы оформления.
