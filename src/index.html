@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QuickDownloader — медиа без границ</title>
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="design.css">
+</head>
+<body>
+  <div class="window-bar" id="windowBar">
+    <div class="window-drag"><img src="../assets/icon-32.png" alt=""><span>QuickDownloader</span><span class="window-tagline">/ медиа без границ</span></div>
+    <div class="window-actions">
+      <button id="windowMinimize" aria-label="Свернуть"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <button id="windowMaximize" aria-label="Развернуть"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></svg></button>
+      <button id="windowClose" class="window-close" aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+  </div>
+  <!-- Splash screen on startup -->
+  <div class="splash-screen" id="splashScreen">
+    <img class="splash-logo" src="../assets/logo.png" alt="QuickDownloader">
+    <div class="splash-title">Quick<span style="color: var(--accent);">Downloader</span></div>
+    <div class="splash-subtitle">Медиа без границ</div>
+  </div>
+
+  <!-- First-run setup overlay -->
+  <div id="setupOverlay" class="setup-overlay" role="dialog" aria-modal="true" aria-label="Подготовка приложения" hidden>
+    <div class="setup-card">
+      <img class="setup-logo" src="../assets/logo.png" alt="QuickDownloader">
+      <h1 class="setup-title">QuickDownloader</h1>
+      <p class="setup-subtitle">Подготавливаем приложение к работе…</p>
+
+      <div class="setup-steps">
+        <div class="setup-step" id="step-ytdlp" data-status="pending">
+          <div class="step-icon">
+            <div class="spinner"></div>
+            <svg class="check" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="step-body">
+            <div class="step-label">Загружаем yt-dlp…</div>
+            <div class="progress-track"><div class="progress-fill" id="prog-ytdlp"></div></div>
+            <div class="step-pct" id="pct-ytdlp">0%</div>
+          </div>
+        </div>
+
+        <div class="setup-step" id="step-ffmpeg" data-status="pending">
+          <div class="step-icon">
+            <div class="spinner"></div>
+            <svg class="check" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="step-body">
+            <div class="step-label">Загружаем FFmpeg…</div>
+            <div class="progress-track"><div class="progress-fill" id="prog-ffmpeg"></div></div>
+            <div class="step-pct" id="pct-ffmpeg">0%</div>
+          </div>
+        </div>
+
+        <div class="setup-step" id="step-verify" data-status="pending">
+          <div class="step-icon">
+            <div class="spinner"></div>
+            <svg class="check" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="step-body">
+            <div class="step-label">Проверяем компоненты…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-done" id="setupDone" hidden>
+        <div class="big-check">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2>Всё готово!</h2>
+        <p>QuickDownloader готов к работе.</p>
+      </div>
+
+      <div class="setup-error" id="setupError" hidden>
+        <p id="setupErrorText">Не удалось загрузить компоненты.</p>
+        <button class="primary" id="setupRetry">Повторить</button>
+      </div>
+    </div>
+  </div>
+
+  <aside>
+    <a class="brand" href="#">
+      <img class="app-logo" src="../assets/logo.png" alt="">Quick<span>Downloader</span>
+    </a>
+    <div class="space">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+    <nav>
+      <button class="active" data-page="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>Загрузить</span>
+        <kbd>N</kbd>
+      </button>
+      <button data-page="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>История</span>
+        <b id="count">0</b>
+      </button>
+      <button data-page="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6m5.2-13.4l-3.5 3.5m-3.4 3.4-3.5 3.5m13.4 0l-3.5-3.5m-3.4-3.4-3.5-3.5"/>
+        </svg>
+        <span>Настройки</span>
+      </button>
+    </nav>
+    <div class="aside-bottom">
+      <div class="engine"><span class="green"></span> Готов к работе <small>yt-dlp + FFmpeg</small></div>
+      <button id="themeToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
+        </svg>
+        <span>Переключить тему</span>
+      </button>
+      <div class="profile">
+        <img src="../assets/logo.png" alt="Q">
+        <div>Личное пространство<small>Сохранено на устройстве</small></div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-logo">
+          <img src="../assets/logo.png" alt="QuickDownloader">
+        </div>
+        <div class="header-info">
+          <h1 class="header-title">QuickDownloader</h1>
+          <p class="header-subtitle">Медиа без границ</p>
+        </div>
+      </div>
+      <div class="header-center">
+        <span class="crumb">Рабочее пространство</span>
+        <span class="slash">/</span>
+        <span id="breadcrumb">Загрузить</span>
+      </div>
+      <div class="header-right">
+        <button id="about" class="header-button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>Помощь</span>
+        </button>
+      </div>
+    </header>
+
+    <section id="download" class="page">
+      <div class="intro">
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <div class="hero-particles"></div>
+        <div class="eyebrow"><span></span> ВАШИ МЕДИА. В ВАШЕМ СТИЛЕ.</div>
+        <div class="hero-icon"><img src="../assets/logo.png" alt="Иконка QuickDownloader"></div>
+        <h1>Любимые моменты.<br><em>Всегда с вами.</em></h1>
+        <p>Видео, музыка и целые плейлисты — в нужном формате.<br>Просто вставьте ссылку. Всё остальное мы упростили.</p>
+      </div>
+
+      <div class="composer">
+        <div class="card-top">
+          <strong>Новая загрузка</strong>
+          <span>На базе yt-dlp</span>
+        </div>
+        <form id="form">
+          <label for="url">Ссылка на видео или аудио</label>
+          <div class="urlbox">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            <input id="url" type="url" required placeholder="Вставьте ссылку сюда…">
+            <button id="paste" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="5" width="13" height="16" rx="2"/><path d="M4 17V3h12"/></svg><span>Вставить</span></button>
+          </div>
+          <div class="options">
+            <div>
+              <label>Что сохранить</label>
+              <div class="segmented">
+                <button class="selected" data-type="video" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg> Видео</button>
+                <button data-type="audio" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Аудио</button>
+              </div>
+            </div>
+            <div>
+              <label for="quality">Качество</label>
+              <select id="quality">
+                <option value="2160">Лучшее доступное</option>
+                <option value="1080">1080p · Full HD</option>
+                <option value="720">720p · HD</option>
+                <option value="480">480p</option>
+              </select>
+            </div>
+            <div>
+              <label for="format">Формат</label>
+              <select id="format">
+                <option>MP4</option>
+                <option>WEBM</option>
+                <option>MKV</option>
+              </select>
+            </div>
+          </div>
+          <div class="composer-bottom">
+            <label class="check"><input id="playlist" type="checkbox"> Скачать плейлист</label>
+            <button class="primary" type="submit" id="downloadBtn">Скачать <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14m-5-5 5 5 5-5M4 20h16"/></svg></button>
+          </div>
+        </form>
+
+        <div id="activeDownload" class="active-dl" hidden>
+          <div class="dl-header">
+            <div class="dl-spinner-icon" id="dlSpinnerIcon">
+              <svg class="download-spinner" viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="20" fill="none" stroke="var(--accent)" stroke-width="4"/>
+              </svg>
+            </div>
+            <div class="dl-success-icon" id="dlSuccessIcon" hidden>
+              <svg class="success-check" viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="20" fill="none"/>
+                <path d="M14 25 L22 33 L36 17"/>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <strong id="dlTitle">Загрузка…</strong>
+              <div class="dl-meta">
+                <span id="dlPct">0%</span>
+                <span id="dlSpeed"></span>
+                <span id="dlEta"></span>
+              </div>
+            </div>
+            <button type="button" id="cancelDl" class="ghost">Отменить</button>
+          </div>
+          <div class="progress-track large"><div class="progress-fill" id="dlProg"></div></div>
+        </div>
+
+        <div class="privacy">Без регистрации <span>·</span> Файлы сохраняются только на вашем устройстве</div>
+      </div>
+
+      <div class="brand-banner" aria-label="QuickDownloader — скачивайте видео">
+        <img src="../assets/banner.png" alt="QuickDownloader" loading="eager" draggable="false">
+      </div>
+    </section>
+
+    <section class="page" hidden id="history">
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">ВАША КОЛЛЕКЦИЯ</div>
+          <h1>История</h1>
+          <p>Скачанные файлы и сохранённые ссылки.</p>
+        </div>
+        <button id="clear">Очистить историю</button>
+      </div>
+      <div id="historyList">
+        <div class="empty empty-hist empty-illustration" style="padding: 60px 30px;">
+          
+          <strong>История пуста</strong>
+          <p style="margin: 10px 0 0;">Скачайте видео или аудио, и оно появится здесь</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" hidden id="settings">
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">ПОДСТРОЙТЕ ПОД СЕБЯ</div>
+          <h1>Настройки</h1>
+          <p>Ваш привычный ритм. Ваш интерфейс.</p>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-section"><h2>Внешний вид</h2>
+        <p>Выберите настроение рабочего пространства.</p>
+        <div class="themes">
+          <button data-theme="dark"><i class="theme-preview dark"></i> Полночь</button>
+          <button data-theme="light"><i class="theme-preview light"></i> Облако</button>
+          <button data-theme="forest"><i class="theme-preview forest"></i> Лес</button>
+        </div>
+
+        </div><div class="settings-section"><h2>Папка загрузок</h2>
+        <div class="folder-row">
+          <code id="downloadPath">—</code>
+          <button type="button" id="chooseFolder" class="ghost">Изменить</button>
+        </div>
+
+        </div><div class="settings-section"><h2>Загрузка по умолчанию</h2>
+        <label class="setting-row">
+          Качество видео
+          <select id="defaultQuality">
+            <option value="2160">Лучшее доступное</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option><option value="480">480p</option>
+          </select>
+        </label>
+        <label class="setting-row">Сохранять историю <input id="keepHistory" type="checkbox" checked></label>
+        <label class="setting-row">Встраивать субтитры <input id="subs" type="checkbox"></label>
+        <label class="setting-row">Встраивать метаданные <input id="metadata" type="checkbox" checked></label>
+
+        </div><div class="settings-section"><h2>Поведение</h2>
+        <label class="setting-row">Запускать вместе с Windows <input id="startWithWindows" type="checkbox"></label>
+        <label class="setting-row">Сворачивать в трей при закрытии <input id="minimizeToTray" type="checkbox" checked></label>
+        <label class="setting-row">Показывать уведомления <input id="showNotifications" type="checkbox" checked></label>
+        <label class="setting-row">Проверять обновления yt-dlp <input id="checkYtDlpUpdates" type="checkbox" checked></label>
+
+        </div><div class="settings-section"><h2>Обучение и настройка</h2>
+        <div class="setting-row">
+          <div>
+            <div style="font-size: 12px; font-weight: 500;">Показать туториал заново</div>
+            <small style="color: var(--muted);">Краткое знакомство с приложением</small>
+          </div>
+          <button id="restartTutorial" class="ghost">Запустить</button>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div style="font-size: 12px; font-weight: 500;">Перезагрузить компоненты</div>
+            <small style="color: var(--muted);">Заново скачать yt-dlp и FFmpeg</small>
+          </div>
+          <button id="resetSetup" class="ghost">Переустановить</button>
+        </div>
+
+        </div><p class="saved">Настройки сохраняются автоматически</p>
+        <p class="version" id="appVersion"></p>
+      </div>
+    </section>
+
+    <footer>
+      <span>quickdownloader <span class="dim">/ Сделано для ваших медиа</span></span>
+      <span>Просто. Быстро. В вашем стиле.</span>
+    </footer>
+  </main>
+
+  <dialog id="modal">
+    <button aria-label="Закрыть" id="close">×</button>
+    <div class="eyebrow">QUICKDOWNLOADER</div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <div id="modalActions"></div>
+  </dialog>
+
+  <div id="toast" role="status"></div>
+
+  <script src="icons.js"></script>
+  <script src="tutorial-simple.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

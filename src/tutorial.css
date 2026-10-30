@@ -1,0 +1,355 @@
+/* First-Time Tutorial Overlay - Interactive Guide */
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tutorialFadeIn 0.4s ease-out;
+}
+
+.tutorial-overlay.hiding {
+  animation: tutorialFadeOut 0.4s ease-in forwards;
+}
+
+@keyframes tutorialFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tutorialFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Tutorial spotlight effect */
+.tutorial-spotlight {
+  position: fixed;
+  border: 3px solid var(--accent);
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85),
+              0 0 40px var(--accent),
+              inset 0 0 40px rgba(206, 250, 115, 0.1);
+  pointer-events: none;
+  z-index: 10000;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Tutorial Card */
+.tutorial-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 480px;
+  background: linear-gradient(135deg, var(--card), var(--field));
+  border: 2px solid var(--accent);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5),
+              0 0 60px rgba(206, 250, 115, 0.3);
+  z-index: 10002;
+  animation: tutorialCardEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  text-align: center;
+}
+
+/* When spotlight is active, position card near spotlight */
+.tutorial-card.near-spotlight {
+  transform: none;
+}
+
+@keyframes tutorialCardEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(40px);
+  }
+  60% {
+    transform: scale(1.05) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tutorial-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 30px;
+  animation: tutorialIconFloat 3s ease-in-out infinite;
+}
+
+.tutorial-icon.rotate {
+  animation: tutorialIconRotate 2s ease-in-out;
+}
+
+@keyframes tutorialIconFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(5deg);
+  }
+}
+
+@keyframes tutorialIconRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.tutorial-icon svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 30px var(--accent));
+}
+
+.tutorial-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  color: var(--text);
+  animation: tutorialTextEnter 0.6s ease-out 0.2s both;
+}
+
+.tutorial-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 0 0 30px 0;
+  animation: tutorialTextEnter 0.6s ease-out 0.3s both;
+}
+
+@keyframes tutorialTextEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tutorial-highlight {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(206, 250, 115, 0.15);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  font-weight: 600;
+  animation: tutorialHighlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes tutorialHighlightPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(206, 250, 115, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(206, 250, 115, 0);
+  }
+}
+
+.tutorial-steps {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 30px 0 0;
+}
+
+.tutorial-step {
+  width: 40px;
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tutorial-step.active {
+  background: var(--accent);
+  width: 60px;
+  box-shadow: 0 0 12px var(--accent);
+}
+
+.tutorial-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  animation: tutorialTextEnter 0.6s ease-out 0.4s both;
+}
+
+.tutorial-button {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tutorial-button.primary {
+  background: var(--accent);
+  color: var(--accentText);
+  box-shadow: 0 6px 20px rgba(206, 250, 115, 0.3);
+}
+
+.tutorial-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(206, 250, 115, 0.4);
+}
+
+.tutorial-button.secondary {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.tutorial-button.secondary:hover {
+  background: var(--field);
+  color: var(--text);
+}
+
+/* Animated pointer arrow */
+.tutorial-arrow {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  z-index: 10001;
+  animation: tutorialArrowBounce 1s ease-in-out infinite;
+}
+
+@keyframes tutorialArrowBounce {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(10px, 10px);
+  }
+}
+
+.tutorial-arrow svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 12px var(--accent));
+  stroke: var(--accent);
+  fill: var(--accent);
+}
+
+/* Pulsing dot indicator */
+.tutorial-pulse-dot {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  animation: tutorialPulseDot 1.5s ease-out infinite;
+}
+
+@keyframes tutorialPulseDot {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(206, 250, 115, 0.7);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 0 15px rgba(206, 250, 115, 0);
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(206, 250, 115, 0);
+  }
+}
+
+/* Skip button */
+.tutorial-skip {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tutorial-skip:hover {
+  background: var(--field);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+/* Confetti animation for completion */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 10002;
+  animation: confettiFall 3s ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .tutorial-card {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+
+  .tutorial-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .tutorial-title {
+    font-size: 22px;
+  }
+
+  .tutorial-text {
+    font-size: 13px;
+  }
+
+  .tutorial-buttons {
+    flex-direction: column;
+  }
+}

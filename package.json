@@ -1,0 +1,84 @@
+{
+  "name": "quickdownloader",
+  "version": "1.0.0",
+  "description": "QuickDownloader — быстрое скачивание видео и аудио с помощью yt-dlp",
+  "main": "main.js",
+  "author": "QuickDownloader",
+  "license": "MIT",
+  "homepage": "https://github.com/quickdownloader/app",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build:dir": "electron-builder --win --dir",
+    "pack": "electron-builder --win nsis",
+    "postinstall": "electron-builder install-app-deps",
+    "test": "electron scripts/smoke.cjs"
+  },
+  "build": {
+    "appId": "com.quickdownloader.app",
+    "productName": "QuickDownloader",
+    "copyright": "Copyright © 2026 QuickDownloader",
+    "directories": {
+      "output": "dist-installer",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "QuickDownloader-Setup-${version}.${ext}",
+      "publisherName": "QuickDownloader",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "QuickDownloader",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "language": "1049",
+      "displayLanguageSelector": false,
+      "installerLanguages": [
+        "ru_RU",
+        "en_US"
+      ],
+      "include": "build/installer.nsh",
+      "installerSidebar": "build/installerSidebar.bmp",
+      "uninstallerSidebar": "build/installerSidebar.bmp"
+    },
+    "publish": null
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^45.1.0",
+    "electron-builder": "^25.1.8"
+  },
+  "allowScripts": {
+    "electron@33.2.0": true
+  }
+}
