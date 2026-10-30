@@ -28,7 +28,7 @@ app.whenReady().then(async()=>{
  for(const id of ['download','history','settings']) {
  await run(`page('${id}')`);await delay(300);
  await check(`document.documentElement.scrollWidth <= document.documentElement.clientWidth`,'no horizontal overflow '+width+' '+id);
- if(width===1280){await run(`document.documentElement.classList.add('capture-still');document.querySelectorAll('.page').forEach(p=>{p.hidden=p.id!=='${id}';p.classList.remove('exiting')});document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page==='${id}'));document.querySelector('#breadcrumb').textContent={download:'Загрузить',history:'История',settings:'Настройки'}['${id}']`);await delay(350);await win.webContents.capturePage();fs.writeFileSync(path.join(__dirname,'../docs/screenshots/'+id+'.png'),(await win.webContents.capturePage()).toPNG());await run(`document.documentElement.classList.remove('capture-still')`);}
+ if(width===1280){await run(`document.documentElement.classList.add('capture-still');document.querySelectorAll('.page').forEach(p=>{p.hidden=p.id!=='${id}';p.classList.remove('exiting')});document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page==='${id}'));document.querySelector('#breadcrumb').textContent={download:'Загрузить',history:'История',settings:'Настройки'}['${id}']`);await delay(350);for(let frame=0;frame<4;frame++){await win.webContents.capturePage();await delay(100)}fs.writeFileSync(path.join(__dirname,'../docs/screenshots/'+id+'.png'),(await win.webContents.capturePage()).toPNG());await run(`document.documentElement.classList.remove('capture-still')`);}
  }
  }
  await check(`[...document.images].filter(i=>i.offsetParent).every(i=>i.complete && i.naturalWidth>0)`,'visible images load');
